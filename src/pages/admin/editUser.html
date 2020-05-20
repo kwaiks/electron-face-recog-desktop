@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body{
+                background-color: burlywood !important;
+            }
+            .mainContainer {
+                margin: 0 auto;
+                margin-top: 50px;
+                max-height: 80vh;
+                max-width: 80vw;
+            }
+            #form{
+                display:flex;
+                flex-direction: column;
+            }
+        </style>
+        <link rel="stylesheet" href="../../css/bootstrap.css"/>
+    </head>
+    <body>
+        <div class="mainContainer">
+           <button onclick="window.history.back()">back</button>
+           <div id="form">
+             <label for="name">Nama</label>
+             <input name="name" id="name" placeholder="name"/>
+             <label for="nik">NIK</label>
+             <input name="nik" id="nik" placeholder="nik"/>   
+           </div>
+           <button onclick="save()">Save</button>
+        </div>
+        <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+        <script type="text/javascript" src="../../js/jquery-3.5.0.min.js"></script>
+        <script src="../../js/bootstrap/bootstrap.js"></script>
+        <script>if (window.module) module = window.module;</script>
+        <script type="text/javascript">
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            const id = urlParams.get('id');
+
+            fetch(`http://localhost:4000/getUser/${id}`)
+            .then(res=>res.json())
+            .then(res=>{
+                let data = res['data'];
+                $('#name').val(data.name);
+                $('#nik').val(data.nik);
+            })
+            .catch(err=>console.log(err));
+
+            function save(){
+                fetch('http://localhost:4000/saveUser',{
+                    method:'POST',
+                    headers:{
+                        'Content-Type':'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: id,
+                        name: $('#name').val(),
+                        nik: $('#nik').val()
+                    })
+                })
+                .then(res=>res.json())
+                .then(res=>{
+                    if(res.statusCode == 200){
+                        window.location.assign('./userSetting.html');
+                    }
+                })
+                .catch(err=>console.error(error))
+            }
+        </script>
+    </body>
+</html>

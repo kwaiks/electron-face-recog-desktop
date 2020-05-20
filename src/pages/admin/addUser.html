@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body{
+                background-color: burlywood !important;
+            }
+            .mainContainer {
+                margin: 0 auto;
+                margin-top: 50px;
+                max-height: 80vh;
+                max-width: 80vw;
+            }
+            #form{
+                display:flex;
+                flex-direction: column;
+            }
+        </style>
+        <link rel="stylesheet" href="../../css/bootstrap.css"/>
+    </head>
+    <body>
+        <div class="mainContainer">
+           <button onclick="window.history.back()">back</button>
+           <div id="form">
+             <label for="name">Nama</label>
+             <input name="name" id="name" placeholder="name"/>
+             <label for="nik">NIK</label>
+             <input name="nik" id="nik" placeholder="nik"/>
+             <label for="foto">Foto (minimal 3)</label>
+             <input type="file" multiple name="foto" id="foto" onchange="updateList()" accept="image/x-png,image/gif,image/jpeg"/>
+             <ul id="fileList">
+             </ul>
+           </div>
+           <button onclick="save()">Add</button>
+        </div>
+        <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+        <script type="text/javascript" src="../../js/jquery-3.5.0.min.js"></script>
+        <script src="../../js/bootstrap/bootstrap.js"></script>
+        <script>if (window.module) module = window.module;</script>
+        <script type="text/javascript">
+            var file = document.getElementById('foto');
+            var list = document.getElementById('fileList');
+            var images = "";
+
+            function updateList(){
+                list.innerHTML = '';
+                images = [];
+
+                for(i=0;i<file.files.length;i++){
+                    let item = document.createElement('li');
+                    item.appendChild(document.createTextNode(file.files[i].name));
+                    list.appendChild(item);
+                    images.push(file.files[i].name)
+                }
+            }
+            function save(){
+                var formData = new FormData();
+
+                formData.append('name',$('#name').val());
+                formData.append('nik',$('#nik').val());
+                formData.append('picture',images.join(','));
+                for(i=0;i<file.files.length;i++){
+                    formData.append('images',file.files[i],file.files[i].name);
+                }
+
+                fetch('http://localhost:4000/addUser',{
+                    method:'POST',
+                    body: formData
+                })
+                .then(res=>res.json())
+                .then(res=>{
+                    if(res.statusCode == 200){
+                        window.location.assign('./userSetting.html');
+                    }
+                })
+                .catch(err=>console.error(error))
+            }
+        </script>
+    </body>
+</html>

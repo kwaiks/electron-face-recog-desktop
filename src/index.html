@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="./css/bootstrap.css"/>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: burlywood;
+        min-height: 100vh;
+        min-width: 100vw;
+        overflow: hidden;
+      }
+      .mainContent {
+        display: flex;
+        align-items: flex-end;
+        width: 500px;
+        justify-content: space-evenly;
+      }
+      a, a:hover{
+          text-decoration: none;
+          color: #000;
+      }
+      .menuContainer {
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column;
+        align-items: center;
+        width: 140px;
+        height: 140px;
+        flex-direction: column;
+        margin-bottom: 20px;
+      }
+      .header{
+          position: fixed;
+          display:flex;
+          justify-content: space-between;
+          align-items: center;
+          width: 100%;
+          height: 30px;
+          top:0;
+          color:white;
+          background-color: blue;
+          padding-left: 20px;
+          padding-right: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <span>SMK 5 Telkom Banda Aceh</span>
+  </div>
+    <div class="mainContent">
+      <a href="pages/attendance/index.html" class="menuContainer" id="attendanceContainer">
+        <img src="../assets/camera.png" height="100px" />
+        <span>Absensi</span>
+      </a>
+      <a href="pages/login/index.html" class="menuContainer" id="loginContainer">
+        <img src="../assets/login.png" height="100px" />
+        <span>Akun</span>
+      </a>
+    </div>
+  </body>
+</html>

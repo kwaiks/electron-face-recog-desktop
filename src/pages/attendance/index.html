@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script defer src="./js/render.js"></script>
+        <style>
+            body{
+              display: flex;
+              background-color: burlywood;
+              overflow: hidden;
+              margin:0;
+            }
+            .mainWrapper{
+              position:relative;
+              flex: 3;
+              height: 100vh;
+            }
+            .mainContainer{
+              margin: 0;
+              padding: 0;
+              display: inline-flex;
+              left:0;
+              top:0;
+              position: absolute;
+            }
+            #main{
+              position: relative;
+            }
+            #main > canvas{
+              left:0;
+              top:0;
+              position: absolute;
+            }
+            .scheduleWrapper{
+              flex:1;
+              display:flex;
+              flex-direction: column;
+              border: 1px solid black;
+            }
+            .results{
+              position: absolute;
+              width:100%;
+              height: 300px;
+              bottom:0;
+              background-color: white;
+            }
+            .results > #resultList{
+              display: grid;
+              grid-template-columns: auto auto auto;
+            }
+            .scheduleItem{
+              display:flex;
+              flex-direction: column;
+              padding: 10px;
+            }
+            .resultItem{
+              display: flex; 
+              flex-direction: column; 
+              padding: 20px;
+            }
+            #result > canvas{
+              position: absolute;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="mainWrapper">
+          <div class="mainContainer">
+              <div class="mainContent" id="main">
+                <video id="video" height="480" width="640" autoplay></video>
+              </div>
+          </div>
+          <div class="results" id="resultWrapper">
+            <div id="resultList" >
+          </div>
+            <div style="position: absolute; right:20px; bottom:30px;">
+              <div id="result"><img id="myImg" src="" width="160" height="120"/></div>
+              <button style="height: 30px; font-size: 16px;" onclick="snapshot()">Cek Foto</button>
+              <button style="height: 30px; font-size: 16px;" onclick="absen()">Absen</button>
+            </div>
+          </div>
+      </div>
+        <div class="scheduleWrapper">
+          <span style="font-weight: bold; align-self: center; margin-bottom: 10px;">Jadwal</span>
+          <span id="time" style="align-self: center;">&nbsp;</span>
+          <div id="jadwal">
+          <div class="scheduleItem">
+            <span>B1332</span>
+            <span>Bahasa Indonesia</span>
+            <span>09:00 - 10:00</span>
+            <span>Alex (N1332)</span>
+          </div>
+          <div class="scheduleItem">
+            <span>B1332</span>
+            <span>Bahasa Indonesia</span>
+            <span>09:00 - 10:00</span>
+            <span>Alex (N1332)</span>
+          </div>
+        </div>
+      </div>
+      <script>
+        onStart();
+        document.getElementById('myImg').style.visibility = "hidden";
+      var currJadwal = [];
+      function onStart(){
+        let today = (new Date()).getDay();
+        fetch(`http://localhost:4000/getTodaySchedule/${today}`)
+          .then(res=>res.json())
+          .then(res=>replaceJadwal(res))
+          .catch(err=>console.log(err));
+        setInterval(showSchedule,5000);
+        showTime();
+      }
+
+      function showTime(){
+        let time = document.getElementById('time');
+        setInterval(function(){
+          let date = new Date();
+          time.textContent = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+        },1000);
+      }
+
+      function showSchedule(){
+        let today = (new Date()).getDay();
+          fetch(`http://localhost:4000/getTodaySchedule/${today}`)
+          .then(res=>res.json())
+          .then(res=>replaceJadwal(res))
+          .catch(err=>console.log(err));
+        }
+
+      function replaceJadwal(res){
+        var jadwal = document.getElementById('jadwal');
+        currJadwal = res;
+        jadwal.innerHTML = '';
+        res.forEach(async (data)=>{
+          let item = document.createElement('div');
+          let code = document.createElement('span');
+          let subject = document.createElement('span');
+          let time = document.createElement('span');
+          let kelas = document.createElement('span');
+          let teacher = document.createElement('span');
+          item.className="scheduleItem";
+          code.innerText = data.code;
+          item.appendChild(code);
+          subject.innerText = data.subject;
+          item.appendChild(subject);
+          kelas.innerText = 'Kelas ' + data.class;
+          item.appendChild(kelas);
+          time.innerText = `${data.starttime} - ${data.endtime}`;
+          item.appendChild(time);
+          teacher.innerText = `${data.name} (${data.nik})`;
+          item.appendChild(teacher);
+          jadwal.appendChild(item);
+        })
+      }
+
+      function dataURItoBlob(dataURI) {
+        // convert base64/URLEncoded data component to raw binary data held in a string
+        var byteString;
+        if (dataURI.split(',')[0].indexOf('base64') >= 0)
+            byteString = atob(dataURI.split(',')[1]);
+        else
+            byteString = unescape(dataURI.split(',')[1]);
+
+        // separate out the mime component
+        var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+        // write the bytes of the string to a typed array
+        var ia = new Uint8Array(byteString.length);
+        for (var i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+        }
+
+        return new Blob([ia], {type:mimeString});
+    }
+
+      function absen(){
+        const img = document.getElementById('myImg');
+        let imgURI = dataURItoBlob(img.src);
+        let imgName = 'attendance-' + Date.now();
+        if(results.length === 0){
+          return false
+        }
+        results.forEach((d)=>{
+          let form = new FormData();
+          form.append('name',d.name);
+          form.append('nik',d.nik);
+          form.append('id',d.id);
+          form.append('pic',imgName);
+          form.append('image',imgURI, imgName);
+
+          fetch('http://localhost:4000/submitAttendance',{
+            method:'POST',
+            body:form
+          })
+          .catch(err=>console.log(err))
+          .then(d=>d.json())
+          .then(d=>console.log(d));
+        })
+      }
+      </script>
+    </body>
+</html>

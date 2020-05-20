@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body{
+                background-color: burlywood !important;
+            }
+            .mainContainer {
+                margin: 0 auto;
+                margin-top: 50px;
+                max-height: 80vh;
+                max-width: 80vw;
+            }
+            #form{
+                padding: 20px;
+            }
+            .wrapper{
+                margin-top: 10px;
+                width: 100%;
+                display:flex;
+                justify-content: start;
+                align-content: flex-start;
+            }
+            .wrapper > label{
+                flex:1;
+            }
+            .wrapper>div{
+                flex:3;
+            }
+        </style>
+        <link rel="stylesheet" href="../../css/bootstrap.css"/>
+    </head>
+    <body>
+        <div class="mainContainer">
+           <button onclick="window.history.back()">back</button>
+           <div id="form">
+               <div class="wrapper">
+                   <label for="mapel">Mata Pelajaran</label>
+                    <div><select name="mapel" id="mapel"></select></div>
+                </div>
+                <div class="wrapper">
+                    <label for="kelas">Kelas</label>
+                    <div><input name="kelas" id="kelas" type="text"/></div>
+                 </div>
+                <div class="wrapper">
+                    <label for="hari">Hari</label>
+                    <div>
+                    <select name="hari" id="hari">
+                        <option value="1">Senin</option>
+                        <option value="2">Selasa</option>
+                        <option value="3">Rabu</option>
+                        <option value="4">Kamis</option>
+                        <option value="5">Jum'at</option>
+                        <option value="6">Sabtu</option>
+                    </select>
+                </div>
+                </div>
+                <div class="wrapper">
+                    <label>Jam Masuk</label>
+                    <div style="display: flex; align-self: flex-start;">
+                        <select name="jamMasuk" id="jamMasuk">
+                            <option value="08">08</option>
+                            <option value="09">09</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="13">13</option>
+                            <option value="14">14</option>
+                            <option value="15">15</option>
+                            <option value="16">16</option>
+                            <option value="17">17</option>
+                        </select>
+                        <span style="margin: 0px 10px 0px 10px;"> : </span>
+                        <select name="menitMasuk" id="menitMasuk">
+                            <option value="00">00</option>
+                            <option value="05">05</option>
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                            <option value="20">20</option>
+                            <option value="25">25</option>
+                            <option value="30">30</option>
+                            <option value="35">35</option>
+                            <option value="40">40</option>
+                            <option value="45">45</option>
+                            <option value="50">50</option>
+                            <option value="55">55</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="wrapper">
+                    <label>Jam Keluar</label>
+                    <div style="display: flex; align-self: flex-start;">
+                        <select name="jamKeluar" id="jamKeluar">
+                            <option value="08">08</option>
+                            <option value="09">09</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="13">13</option>
+                            <option value="14">14</option>
+                            <option value="15">15</option>
+                            <option value="16">16</option>
+                            <option value="17">17</option>
+                        </select>
+                        <span style="margin: 0px 10px 0px 10px;"> : </span>
+                        <select name="menitKeluar" id="menitKeluar">
+                            <option value="00">00</option>
+                            <option value="05">05</option>
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                            <option value="20">20</option>
+                            <option value="25">25</option>
+                            <option value="30">30</option>
+                            <option value="35">35</option>
+                            <option value="40">40</option>
+                            <option value="45">45</option>
+                            <option value="50">50</option>
+                            <option value="55">55</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+           <button onclick="save()">Add</button>
+        </div>
+        <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+        <script type="text/javascript" src="../../js/jquery-3.5.0.min.js"></script>
+        <script src="../../js/bootstrap/bootstrap.js"></script>
+        <script>if (window.module) module = window.module;</script>
+        <script type="text/javascript">
+            var mapelOpt = document.getElementById('mapel');
+            fetch('http://localhost:4000/getSubject')
+            .then(res=>res.json())
+            .then(res=>{
+                console.log(res)
+                res.forEach((d)=>{
+                    var opt = document.createElement('option');
+                    opt.appendChild(document.createTextNode(`${d.code} ${d.subject} - ${d.name}`));
+                    opt.value = d.id;
+                    mapelOpt.appendChild(opt)
+                })
+            })
+
+
+            function save(){            
+                let jamMasuk = $('#jamMasuk').val() + ':' + $('#menitMasuk').val();
+                let jamKeluar = $('#jamKeluar').val() + ':' + $('#menitKeluar').val();
+                fetch('http://localhost:4000/addSchedule',{
+                    method:'POST',
+                    headers:{
+                        'Content-Type':'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: $('#mapel').val(),
+                        kelas: $('#kelas').val(),
+                        day: $('#hari').val(),
+                        inTime: jamMasuk,
+                        outTime: jamKeluar
+                    })
+                })
+                .then(res=>res.json())
+                .then(res=>{
+                    if(res.statusCode == 200){
+                        window.location.assign('./schedule.html');
+                    }
+                })
+                .catch(err=>console.error(error))
+            }
+        </script>
+    </body>
+</html>

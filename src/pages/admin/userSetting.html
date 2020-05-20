@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body{
+                background-color: burlywood !important;
+            }
+            .mainContainer {
+                margin: 0 auto;
+                max-height: 80vh;
+                max-width: 80vw;
+            }
+        </style>
+        <link rel="stylesheet" href="../../css/bootstrap.css"/>
+        <link rel="stylesheet" href="../../js/datatable/css/buttons.dataTables.min.css">
+        <link rel="stylesheet" href="../../js/datatable/css/jquery.dataTables.min.css">
+    </head>
+    <body>
+        <div class="mainContainer">
+            <div style="display:flex;justify-content: space-between;">
+                <button onclick="window.location.assign('./index.html')">Back</button>
+                <button onclick="window.location.assign('./addUser.html')">Add New</button>
+            </div>
+            <table id="example" class="table table-striped table-bordered" style="width:100%;background-color: white;">
+                <thead>
+                    <tr>
+                        <th>Nama</th>
+                        <th>NIK</th>
+                        <th>Tindakan</th>
+                    </tr>
+                </thead>
+                <tbody id="daw">
+                </tbody>
+            </table>
+        </div>
+        <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+        <script type="text/javascript" src="../../js/jquery-3.5.0.min.js"></script>
+        <script src="../../js/bootstrap/bootstrap.js"></script>
+        <script src="../../js/datatable/js/jquery.dataTables.js"></script>
+        <script>if (window.module) module = window.module;</script>
+        <script type="text/javascript">
+            $(function(){
+                $('#example').DataTable({
+                    responsive: true,
+                    ajax: {
+                        "url": 'http://localhost:4000/getUser',
+                        "type" : "GET",
+                        "dataSrc" : ""
+                    },
+                    columns: [
+                        {"data":"name"},
+                        {"data":"nik"},
+                        {
+                            "data": "id",
+                            "render":function(data){
+                                return `<a href="editUser.html?id=${data}">Edit</a>`
+                            }
+                        }
+                    ]
+                })
+            });
+            $('#example').on('click', 'tr', function(e){
+                console.log(e)
+            });
+        </script>
+    </body>
+</html>

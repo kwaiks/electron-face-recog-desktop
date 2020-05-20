@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body{
+                background-color: burlywood !important;
+            }
+            .mainContainer {
+                margin: 0 auto;
+                margin-top: 50px;
+                max-height: 80vh;
+                max-width: 80vw;
+            }
+            #form{
+                display:flex;
+                flex-direction: column;
+            }
+        </style>
+        <link rel="stylesheet" href="../../css/bootstrap.css"/>
+    </head>
+    <body>
+        <div class="mainContainer">
+           <button onclick="window.history.back()">back</button>
+           <div id="form">
+             <label for="code">Kode</label>
+             <input name="code" id="code" placeholder="Kode"/>
+             <label for="subjectName">NIK</label>
+             <input name="subjectName" id="subjectName" placeholder="Nama Mata Pelajaran"/>
+             <label for="option">Guru</label>   
+             <select id="option">
+             </select>
+           </div>
+           <button onclick="save()">Add</button>
+        </div>
+        <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+        <script type="text/javascript" src="../../js/jquery-3.5.0.min.js"></script>
+        <script src="../../js/bootstrap/bootstrap.js"></script>
+        <script>if (window.module) module = window.module;</script>
+        <script type="text/javascript">
+            var options = document.getElementById('option');
+
+            fetch('http://localhost:4000/getUser')
+            .then(res=>res.json())
+            .then(res=>{
+                res.forEach((d)=>{
+                    var opt = document.createElement('option');
+                    opt.appendChild(document.createTextNode(d.name));
+                    opt.value = d.id;
+                    options.appendChild(opt)
+                })
+            })
+
+            function save(){
+                fetch('http://localhost:4000/addSubject',{
+                    method:'POST',
+                    headers:{
+                        'Content-Type':'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: $('#option').val(),
+                        code: $('#code').val(),
+                        subject: $('#subjectName').val()
+                    })
+                })
+                .then(res=>res.json())
+                .then(res=>{
+                    if(res.statusCode == 200){
+                        window.location.assign('./subjects.html');
+                    }
+                })
+                .catch(err=>console.error(error))
+            }
+        </script>
+    </body>
+</html>
