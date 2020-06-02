@@ -1,4 +1,4 @@
-require('@tensorflow/tfjs-node')
+require('@tensorflow/tfjs-node') //di windows harus di comment agar bisa bekerja
 
 const faceapi = require('face-api.js');
 const loadImage = require('./js/loadImage');
@@ -12,6 +12,7 @@ var person;
 var results;
 
 const init = () => {
+    //mengambil semua model pada library
     return Promise.all([
         faceapi.nets.ssdMobilenetv1.loadFromUri('../../../assets/models'),
         faceapi.nets.faceLandmark68Net.loadFromUri('../../../assets/models'),
@@ -22,10 +23,10 @@ const init = () => {
 }
 
 const run = async () => {
-    startWebcam();
+    startWebcam(); //menyiapkan webcam
     console.log('started');
-    const labeledFaceDescriptor = await loadImage();
-    faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptor,.6);
+    const labeledFaceDescriptor = await loadImage(); //mengumpulkan semua image untuk face detection
+    faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptor,.6); //membuat keakurasian 0.6
 }
 
 const startWebcam = () => {
@@ -48,6 +49,7 @@ const startWebcam = () => {
 
 }
 
+//function untuk deteksi
 const startVideo = () => {
     video.addEventListener('play', async()=>{
         const canvas = faceapi.createCanvasFromMedia(video);
@@ -58,26 +60,35 @@ const startVideo = () => {
             height: video.height
         }
         faceapi.matchDimensions(canvas, displaySize);
+        //melakukan pengecekan setiap 1detik
         setInterval(async()=>{
             person = [];
+
+            //fungsi mendeteksi semua muka yang ada pada webcam, dengan kotak dan nik
             const detections = await faceapi.detectAllFaces(
                 video,
                 new faceapi.SsdMobilenetv1Options()
             ).withFaceLandmarks().withFaceDescriptors();
+            //mengubah ukuran kotak
             const resizedDetections = faceapi.resizeResults(detections, displaySize);
+
+            //mapping setiap muka yang dideteksi dengan kumpulan image yang sudah disiapkan
             const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor));
+            //membuat kotak
             canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
+            //melakukan looping untuk setiap muka yang dideteksi
             results.forEach((result,i)=>{
                 const box = resizedDetections[i].detection.box;
                 const drawBox = new faceapi.draw.DrawBox(box, {
                     label: result._label
                 });
+                //jika muka yang dideteksi labelnya nik, maka disimpan didalam array
                 if(result._label != "unknown"){
                     person.push(result._label);
                 }
                 drawBox.draw(canvas);
             });
-            },1000);
+            },1000);// -> pengubahan durasi interval
         });
 }
 
@@ -86,6 +97,8 @@ init()
 .catch(err=>console.log(err));
 startVideo();
 
+
+//function untuk mengambil data user yang dideteksi setelah menekan tombol
 async function snapshot(){
     document.getElementById('myImg').style.visibility = "visible";
     let canvas = document.createElement('canvas');
@@ -98,6 +111,7 @@ async function snapshot(){
     showResult(person);
 }
 
+//menampilkan data user dari fungsi snapshot
 function showResult(results){
     var resultList;
     const divItem = "resultList";
@@ -115,6 +129,7 @@ function showResult(results){
     })
 }
 
+//memfilter user yang dideteksi dengan data guru yang akan mengajar, jika gurunya terdeteksi tetapi tidak ada jadwalnya. maka tidak akan masuk
 function filterUser(code){
     results = []
     code.forEach(d=>{
@@ -124,6 +139,7 @@ function filterUser(code){
     return results
 }
 
+//membuat list dari setiap guru yang difilter
 function createList(data,listDiv){
     let list = document.createElement('div');
     let nik = document.createElement('span');

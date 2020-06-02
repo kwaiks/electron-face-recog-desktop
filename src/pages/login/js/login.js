@@ -12,7 +12,7 @@ document.addEventListener('keyup', function(e){
     e.preventDefault();
 });
 
-//post ke api server
+//otentikasi login user
 async function login(){
     const c = await fetch("http://localhost:4000/login",{
         method:'POST',
@@ -32,13 +32,16 @@ async function login(){
             reminder.hidden = true;
             //nyimpen data user yg login, harus user
             storage.set('user',res.data);
+            //jika tipe user admin ke halaman admin
             if(res.data.type == 'admin'){
                 window.location.assign('../admin/index.html');
             }else{
                 window.location.assign('../user/index.html');
             }
+        }else{
+            //jika password salah
+            reminder.hidden = false;
         }
-        reminder.hidden = false;
     })
     .catch(err=>console.log(err))
 }

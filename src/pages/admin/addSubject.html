@@ -39,6 +39,7 @@
         <script type="text/javascript">
             var options = document.getElementById('option');
 
+            //mengambil guru
             fetch('http://localhost:4000/getUser')
             .then(res=>res.json())
             .then(res=>{
@@ -50,6 +51,7 @@
                 })
             })
 
+            //menyimpan data mapel
             function save(){
                 fetch('http://localhost:4000/addSubject',{
                     method:'POST',

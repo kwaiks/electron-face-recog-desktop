@@ -176,7 +176,7 @@
       function absen(){
         const img = document.getElementById('myImg');
         let imgURI = dataURItoBlob(img.src);
-        let imgName = 'attendance-' + Date.now();
+        let imgName = 'attendance-' + Date.now() + '.jpg';
         if(results.length === 0){
           return false
         }

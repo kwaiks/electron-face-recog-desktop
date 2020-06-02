@@ -3,6 +3,7 @@ const storage = require('electron-json-storage');
 
 require('electron-reload')(__dirname);
 
+//membuat screen desktop
 function createWindow(){
     const win = new BrowserWindow({
         width: 800,
@@ -13,26 +14,11 @@ function createWindow(){
         }
     });
 
+    //menload file index
     win.loadFile('src/index.html');
 
+    //agar screen langsung maximize
     win.maximize();
-
-    //win.webContents.openDevTools();
-
-    // var Menu = Menu.buildFromTemplate([
-    //     {
-    //         label: 'Menu',
-    //         submenu: [
-    //             {
-    //                 label:'Exit',
-    //                 click(){
-    //                     app.quit();
-    //                 }
-    //             }
-    //         ]
-    //     }
-    // ]);
-    // Menu.setApplicationMenu(menu);
 }
 
 app.whenReady().then(createWindow);

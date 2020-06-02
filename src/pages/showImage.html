@@ -59,15 +59,19 @@
     </div>
     <div id="user"></div>
     <div class="mainContent">
-      <a href="report.html" class="menuContainer" id="attendanceContainer">
-        <img src="../assets/camera.png" height="100px" />
-        <span>Kehadiran</span>
-      </a>
-      <a href="schedule.html" class="menuContainer" id="loginContainer">
-        <img src="../assets/login.png" height="100px" />
-        <span>Jadwal</span>
-      </a>
+        <div style="display:flex">
+            <button onclick="window.history.back()">Back</button>
+        </div>
+      <img id="img" src="">
     </div>
-    <script src="js/user.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded',()=>{
+            var url = new URLSearchParams(window.location.search);
+            var param = url.get("image"); //mengambil parameter
+            var img = document.getElementById("img")
+            //mengubah img source untuk gambar sesuai dengan parameter yang dikirim
+            img.src = "http://localhost:4000/images/evidence/" + param;
+        });
+    </script>
   </body>
 </html>

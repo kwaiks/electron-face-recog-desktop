@@ -125,6 +125,7 @@
         <script src="../../js/bootstrap/bootstrap.js"></script>
         <script>if (window.module) module = window.module;</script>
         <script type="text/javascript">
+            //mengambil semua mata pelajaran
             var mapelOpt = document.getElementById('mapel');
             fetch('http://localhost:4000/getSubject')
             .then(res=>res.json())
@@ -138,7 +139,7 @@
                 })
             })
 
-
+            //menyimpan jadwal
             function save(){            
                 let jamMasuk = $('#jamMasuk').val() + ':' + $('#menitMasuk').val();
                 let jamKeluar = $('#jamKeluar').val() + ':' + $('#menitKeluar').val();

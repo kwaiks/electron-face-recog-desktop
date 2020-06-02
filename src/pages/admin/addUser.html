@@ -42,6 +42,7 @@
             var list = document.getElementById('fileList');
             var images = "";
 
+            //menampilkan list image yang diupload
             function updateList(){
                 list.innerHTML = '';
                 images = [];
@@ -53,6 +54,8 @@
                     images.push(file.files[i].name)
                 }
             }
+
+            //menyimpan data guru
             function save(){
                 var formData = new FormData();
 
